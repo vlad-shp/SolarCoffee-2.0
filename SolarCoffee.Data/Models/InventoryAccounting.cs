@@ -1,5 +1,5 @@
-﻿using System;
-using SolarCoffee.Data.Enums;
+﻿using SolarCoffee.Data.Enums;
+using System;
 
 namespace SolarCoffee.Data.Models
 {

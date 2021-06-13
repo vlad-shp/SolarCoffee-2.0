@@ -11,6 +11,8 @@ namespace SolarCoffee.Data.Models
         [MaxLength(100)]
         public string LastName { get; set; }
         public CustomerAddress PrimaryAddress { get; set; }
+        public string Email { get; set; }
+        public string PhoneNumber { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime UpdatedOn { get; set; }
     }
