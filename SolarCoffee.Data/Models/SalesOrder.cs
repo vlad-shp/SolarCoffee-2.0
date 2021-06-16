@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SolarCoffee.Data.Enums;
+using System;
 using System.Collections.Generic;
 
 namespace SolarCoffee.Data.Models
@@ -8,7 +9,7 @@ namespace SolarCoffee.Data.Models
         public int Id { get; set; }
         public Customer Customer { get; set; }
         public List<SalesOrderItem> SalesOrderItems { get; set; }
-        public bool IsPaid { get; set; }
+        public OrderStatus OrderStatus { get; set; }
         public Delivery Delivery { get; set; }
         public Payment Payment { get; set; }
         public Discount Discount { get; set; }

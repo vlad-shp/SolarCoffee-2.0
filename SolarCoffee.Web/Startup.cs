@@ -7,7 +7,13 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SolarCoffee.Data;
-using SolarCoffee.Services.Customer;
+using SolarCoffee.Services.Customers;
+using SolarCoffee.Services.Inventories;
+using SolarCoffee.Services.Orders;
+using SolarCoffee.Services.Orders.Deliveries;
+using SolarCoffee.Services.Orders.Discounts;
+using SolarCoffee.Services.Orders.Payments;
+using SolarCoffee.Services.Products;
 
 namespace SolarCoffee.Web
 {
@@ -34,7 +40,13 @@ namespace SolarCoffee.Web
                 opts.UseNpgsql(Configuration.GetConnectionString("solar.dev"));
             });
 
+            services.AddTransient<IProductService, ProductService>();
             services.AddTransient<ICustomerService, CustomerService>();
+            services.AddTransient<IInventoryService, InventoryService>();
+            services.AddTransient<IOrderService, OrderService>();
+            services.AddTransient<IPaymentService, PaymentService>();
+            services.AddTransient<IDeliveryService, DeliveryService>();
+            services.AddTransient<IDiscountService, DiscountService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
