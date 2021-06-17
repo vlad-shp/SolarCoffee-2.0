@@ -85,7 +85,7 @@ namespace SolarCoffee.Web.Controllers
 
             var result = await _customerService.DeleteCustomer(id);
 
-            return result ? NotFound() : Ok();
+            return !result ? NotFound() : Ok();
         }
     }
 }
