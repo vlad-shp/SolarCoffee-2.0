@@ -94,7 +94,7 @@ namespace SolarCoffee.Services.Customers
                 customer.FirstName = refreshCustomer.FirstName;
                 customer.LastName = refreshCustomer.LastName;
                 customer.Email = refreshCustomer.Email;
-                customer.PhoneNumber = refreshCustomer.Email;
+                customer.PhoneNumber = refreshCustomer.PhoneNumber;
                 customer.UpdatedOn = refreshCustomer.CreatedOn;
                 if (customer.PrimaryAddress != null)
                 {

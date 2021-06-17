@@ -3,22 +3,9 @@
 		<v-card class="pa-12">
 			<v-row align="center" justify="space-between">
 				<span class="black--text text-h5">Customers</span>
-				<v-btn
-					elevation="0"
-					color="secondary"
-					@click="
-						addNewCustomerFormVisible = !addNewCustomerFormVisible
-					"
-				>
-					Add New Customer
-					<v-icon right>mdi-plus</v-icon>
-				</v-btn>
+				<new-customer-button @customerAdded="addedNewCustomer" />
 			</v-row>
 		</v-card>
-		<add-new-customer
-			v-if="addNewCustomerFormVisible"
-			@customerAdded="addedNewCustomer"
-		/>
 		<v-card class="pa-12 mt-5">
 			<v-data-table
 				:headers="customersHeaders"
@@ -49,23 +36,22 @@
 
 <script lang="ts">
 import ICustomer from "@/models/customer";
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Inject } from "vue-property-decorator";
 import { DataTableHeader } from "vuetify";
-import AddNewCustomer from "@/components/AddNewCustomer.vue";
+import NewCustomerButton from "@/components/NewCustomerButton.vue";
 import EditCustomerDialog from "@/components/dialogs/EditCustomerDialog.vue";
 
 import CustomerService from "@/services/customer-service";
 
-const customerService = new CustomerService();
-
-@Component({ components: { AddNewCustomer, EditCustomerDialog } })
+@Component({ components: { NewCustomerButton, EditCustomerDialog } })
 export default class Customers extends Vue {
+	@Inject() readonly customerService!: CustomerService;
+
 	customers: ICustomer[] = [];
 
 	currentCustomer: ICustomer | null = null;
 
 	editDialogVisible = false;
-	addNewCustomerFormVisible = false;
 
 	get customersHeaders(): DataTableHeader[] {
 		return [
@@ -92,23 +78,29 @@ export default class Customers extends Vue {
 	}
 
 	async initialize(): Promise<void> {
-		this.customers = await customerService.getCustomers();
+		this.customers = await this.customerService.getCustomers();
 	}
 
 	async addedNewCustomer(): Promise<void> {
-		this.addNewCustomerFormVisible = false;
-
 		await this.initialize();
 	}
 
 	async remove(index: number): Promise<void> {
-		await customerService.deleteCustomer(index);
+		await this.customerService.deleteCustomer(index);
 		await this.initialize();
 	}
 
 	async customerEdited(customer: ICustomer): Promise<void> {
-		await customerService.refreshCustomer(customer.id, customer);
-		await this.initialize();
+		await this.customerService.refreshCustomer(customer.id, customer);
+
+		const editedCustomerIndex = this.customers.findIndex(
+			(c) => c.id == customer.id
+		);
+
+		if (editedCustomerIndex > -1) {
+			this.$set(this.customers, editedCustomerIndex, customer);
+		}
+		//await this.initialize();
 	}
 
 	openEditDialog(customer: ICustomer): void {
