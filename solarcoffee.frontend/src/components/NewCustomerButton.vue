@@ -1,7 +1,12 @@
 <template>
 	<v-dialog v-model="dialog" max-width="600px">
 		<template v-slot:activator="{ on }">
-			<v-btn elevation="0" color="secondary" v-on="on">
+			<v-btn
+				elevation="0"
+				color="secondary"
+				v-on="on"
+				:disabled="disabledButton"
+			>
 				Add New Customer
 				<v-icon right>mdi-plus</v-icon>
 			</v-btn>
@@ -141,12 +146,15 @@
 
 <script lang="ts">
 import ICustomer from "@/models/customer";
-import { Component, Vue, Watch, Inject } from "vue-property-decorator";
+import { Component, Vue, Watch, Inject, Prop } from "vue-property-decorator";
 import CustomerService from "@/services/customer-service";
 
 @Component
 export default class NewCustomerButton extends Vue {
 	@Inject() readonly customerService!: CustomerService;
+
+	@Prop({ required: true })
+	disabledButton!: boolean;
 
 	dialog = false;
 	formValid = false;

@@ -3,17 +3,21 @@
 		<v-card class="pa-12">
 			<v-row align="center" justify="space-between">
 				<span class="black--text text-h5">Customers</span>
-				<new-customer-button @customerAdded="addedNewCustomer" />
+				<new-customer-button
+					:disabledButton="!dataLoaded"
+					@customerAdded="addedNewCustomer"
+				/>
 			</v-row>
 		</v-card>
 		<v-card class="pa-12 mt-5">
 			<v-data-table
 				:headers="customersHeaders"
 				:items="customers"
+				:loading="!dataLoaded"
 				fixed-header
 				v-resize="onResize"
 			>
-				<template v-slot:[`item.actions`]="{ item }">
+				<template #[`item.actions`]="{ item }">
 					<v-row justify="center">
 						<v-btn @click="openEditDialog(item)" elevation="0" icon>
 							<v-icon color="#149000">mdi-account-edit</v-icon>
@@ -52,6 +56,7 @@ export default class Customers extends Vue {
 	currentCustomer: ICustomer | null = null;
 
 	editDialogVisible = false;
+	dataLoaded = false;
 
 	get customersHeaders(): DataTableHeader[] {
 		return [
@@ -78,7 +83,9 @@ export default class Customers extends Vue {
 	}
 
 	async initialize(): Promise<void> {
+		this.dataLoaded = false;
 		this.customers = await this.customerService.getCustomers();
+		this.dataLoaded = true;
 	}
 
 	async addedNewCustomer(): Promise<void> {
@@ -100,7 +107,6 @@ export default class Customers extends Vue {
 		if (editedCustomerIndex > -1) {
 			this.$set(this.customers, editedCustomerIndex, customer);
 		}
-		//await this.initialize();
 	}
 
 	openEditDialog(customer: ICustomer): void {

@@ -68,7 +68,7 @@ namespace SolarCoffee.Web.Controllers
             return newProductResponse == null ? NotFound() : Ok(newProductResponse);
         }
 
-        [HttpPatch("/api/product/id")]
+        [HttpPatch("/api/product/{id}")]
         [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
         public async Task<ActionResult> RefreshProduct(int id, [FromBody] Product product)
         {

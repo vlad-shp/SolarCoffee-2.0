@@ -1,7 +1,7 @@
 <template>
 	<v-dialog v-model="dialog" max-width="800px">
 		<v-card v-if="refreshedCustomer" class="py-4">
-			<v-card-title> Refresh customer details </v-card-title>
+			<v-card-title> Edit customer details </v-card-title>
 			<v-card-text>
 				<v-form v-model="formValid">
 					<v-row>
