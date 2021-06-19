@@ -31,21 +31,39 @@
 				</template>
 				<template v-slot:[`item.actions`]="{ item }">
 					<v-row justify="center">
-						<v-btn @click="openEditDialog(item)" elevation="0" icon>
-							<v-icon color="#149000"
-								>mdi-square-edit-outline</v-icon
-							>
-						</v-btn>
-						<v-btn
-							@click="archive(item.id)"
-							:disabled="item.isArchived"
-							elevation="0"
-							icon
-						>
-							<v-icon color="orange"
-								>mdi-archive-arrow-down</v-icon
-							>
-						</v-btn>
+						<v-tooltip top>
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn
+									v-on="on"
+									v-bind="attrs"
+									@click="openEditDialog(item)"
+									elevation="0"
+									icon
+								>
+									<v-icon color="#149000"
+										>mdi-square-edit-outline</v-icon
+									>
+								</v-btn>
+							</template>
+							<span>Edit</span>
+						</v-tooltip>
+						<v-tooltip top>
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn
+									v-on="on"
+									v-bind="attrs"
+									@click="archive(item.id)"
+									:disabled="item.isArchived"
+									elevation="0"
+									icon
+								>
+									<v-icon color="orange"
+										>mdi-archive-arrow-down</v-icon
+									>
+								</v-btn>
+							</template>
+							<span>Archive</span>
+						</v-tooltip>
 					</v-row>
 				</template>
 			</v-data-table>

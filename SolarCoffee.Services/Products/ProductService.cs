@@ -104,6 +104,7 @@ namespace SolarCoffee.Services.Products
                 product.Name = refreshedProduct.Name;
                 product.Description = refreshedProduct.Description;
                 product.IsTaxable = refreshedProduct.IsTaxable;
+                product.IsArchived = refreshedProduct.IsArchived;
                 product.Price = refreshedProduct.Price;
                 product.UpdatedOn = refreshedProduct.CreatedOn;
 

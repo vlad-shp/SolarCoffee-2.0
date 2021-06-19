@@ -19,12 +19,38 @@
 			>
 				<template #[`item.actions`]="{ item }">
 					<v-row justify="center">
-						<v-btn @click="openEditDialog(item)" elevation="0" icon>
-							<v-icon color="#149000">mdi-account-edit</v-icon>
-						</v-btn>
-						<v-btn @click="remove(item.id)" elevation="0" icon>
-							<v-icon color="red">mdi-account-remove</v-icon>
-						</v-btn>
+						<v-tooltip top>
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn
+									v-on="on"
+									v-bind="attrs"
+									@click="openEditDialog(item)"
+									elevation="0"
+									icon
+								>
+									<v-icon color="#149000"
+										>mdi-account-edit</v-icon
+									>
+								</v-btn>
+							</template>
+							<span>Edit</span>
+						</v-tooltip>
+						<v-tooltip top>
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn
+									v-on="on"
+									v-bind="attrs"
+									@click="remove(item.id)"
+									elevation="0"
+									icon
+								>
+									<v-icon color="red"
+										>mdi-account-remove</v-icon
+									>
+								</v-btn>
+							</template>
+							<span>Remove</span>
+						</v-tooltip>
 					</v-row>
 				</template>
 			</v-data-table>

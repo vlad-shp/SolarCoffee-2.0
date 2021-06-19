@@ -35,7 +35,7 @@ namespace SolarCoffee.Web.Controllers
         }
 
         [HttpPatch("/api/inventory")]
-        [ProducesResponseType(typeof(List<ProductInventory>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProductInventory), (int)HttpStatusCode.OK)]
         public async Task<ActionResult> UpdateInventory([FromBody] ShipmentModel shipment)
         {
             if (!ModelState.IsValid)

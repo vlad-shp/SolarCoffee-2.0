@@ -6,6 +6,7 @@ import axios from "axios";
  */
 export default class CustoemrService {
 	API_URL = process.env.VUE_APP_API_URL;
+
 	public async getCustomers(): Promise<ICustomer[]> {
 		const result = await axios.get<ICustomer[]>(
 			`${this.API_URL}/customer/`

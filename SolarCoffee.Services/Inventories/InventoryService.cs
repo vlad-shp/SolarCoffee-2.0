@@ -25,7 +25,7 @@ namespace SolarCoffee.Services.Inventories
         {
             return await _db.ProductInventories
                 .Include(pi => pi.Product)
-                .Where(pi => !pi.Product.IsArchived)
+                //.Where(pi => !pi.Product.IsArchived)
                 .ToListAsync();
         }
 

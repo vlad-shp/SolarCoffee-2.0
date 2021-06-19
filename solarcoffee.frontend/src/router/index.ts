@@ -12,7 +12,7 @@ const routes: Array<RouteConfig> = [
 	{
 		path: "/inventory",
 		name: "inventory",
-		//component: () => import("@/views/Inventory.vue"),
+		component: () => import("@/views/Inventory.vue"),
 	},
 	{
 		path: "/customers",
