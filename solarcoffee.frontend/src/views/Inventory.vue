@@ -69,6 +69,15 @@ import ReceiveShipmentDialog from "@/components/dialogs/ReceiveShipmentDialog.vu
 export default class Inventory extends Vue {
 	@Inject() readonly inventoryService!: InventoryService;
 
+	shipment: IShipment | null = null;
+	shipmentProductName = "";
+
+	dataLoaded = false;
+	showArchived = false;
+	receiveShipmentDialogVisible = false;
+
+	inventoryItems: IInventory[] = [];
+
 	get filteredItems(): IInventory[] {
 		if (this.showArchived) {
 			return this.inventoryItems;
@@ -81,15 +90,6 @@ export default class Inventory extends Vue {
 			});
 		}
 	}
-
-	shipment: IShipment | null = null;
-	shipmentProductName = "";
-
-	dataLoaded = false;
-	showArchived = false;
-	receiveShipmentDialogVisible = false;
-
-	inventoryItems: IInventory[] = [];
 
 	get inventoryHeaders(): DataTableHeader[] {
 		return [
@@ -157,7 +157,7 @@ export default class Inventory extends Vue {
 	openReceiveShipmentDialog(item: IInventory): void {
 		this.shipment = {
 			productId: item.id,
-			adjustment: 0,
+			adjustment: 1,
 		};
 		this.shipmentProductName = item.product.name;
 		this.receiveShipmentDialogVisible = true;

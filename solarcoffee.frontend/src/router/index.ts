@@ -22,22 +22,12 @@ const routes: Array<RouteConfig> = [
 	{
 		path: "/orders",
 		name: "orders",
-		//component: () => import("@/views/Orders.vue"),
+		component: () => import("@/views/Orders.vue"),
 	},
 	{
 		path: "/products",
 		name: "products",
 		component: () => import("@/views/Products.vue"),
-	},
-	{
-		path: "/order/new",
-		name: "new-order",
-		//component: () => import("@/views/CreateInvoice.vue"),
-	},
-	{
-		path: "/order/settings",
-		name: "order-settings",
-		//component: () => import("@/views/CreateInvoice.vue"),
 	},
 ];
 

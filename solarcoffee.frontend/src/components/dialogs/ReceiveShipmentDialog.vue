@@ -10,7 +10,7 @@
 								:value="productName"
 								label="Product name"
 								readonly
-								prepend-inner-icon="mdi-format-title"
+								prepend-inner-icon="mdi-alpha-t-box-outline"
 							/>
 						</v-col>
 						<v-col cols="6">
@@ -23,7 +23,7 @@
 										'Adjustment has to be more then 0',
 								]"
 								type="number"
-								prepend-inner-icon="mdi-cash-multiple"
+								prepend-inner-icon="mdi-alpha-a-box-outline"
 							/>
 						</v-col>
 					</v-row>
@@ -64,8 +64,10 @@ export default class ReceiveShipmentDialog extends Vue {
 	formValid = false;
 
 	onSave(): void {
-		this.dialog = false;
-		this.$emit("saveReceiveShipment", this.shipment);
+		if (this.shipment.adjustment > 0) {
+			this.dialog = false;
+			this.$emit("saveReceiveShipment", this.shipment);
+		}
 	}
 }
 </script>

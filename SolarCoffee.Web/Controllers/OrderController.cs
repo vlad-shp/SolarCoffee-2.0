@@ -49,7 +49,7 @@ namespace SolarCoffee.Web.Controllers
 
             foreach (var order in orders)
             {
-               var salesOrderItems = order.SalesOrderItems.Select(orderItem => new OrderItemModel(orderItem.Id, orderItem.Quantity, orderItem.Product.Id)).ToList();
+                var salesOrderItems = order.SalesOrderItems.Select(orderItem => new OrderItemModel(orderItem.Id, orderItem.Quantity, orderItem.Product.Id)).ToList();
 
                 orderViews.Add(new OrdersViewModel(
                     order.Id, 

@@ -32,15 +32,13 @@ namespace SolarCoffee.Web.Controllers
         public async Task<ActionResult> GetOrderSettings()
         {
 
-            var payments = _paymentService.GetPaymentMethods();
-            var discounts = _discountService.GetDiscountInstances();
-            var deliveries = _deliveryService.GetDeliveryMethods();
+            var payments = await _paymentService.GetPaymentMethods();
+            var discounts = await _discountService.GetDiscountInstances();
+            var deliveries = await _deliveryService.GetDeliveryMethods();
 
-            await Task.WhenAll(payments, discounts, deliveries);
-
-            var paymentModels = payments.Result.Select(payment => new PaymentModel(payment.Id, payment.Name, payment.Description)).ToList();
-            var discountModels = discounts.Result.Select(discount => new DiscountModel(discount.Id, discount.Name, discount.Description, discount.DiscountPercent)).ToList();
-            var deliveryModels = deliveries.Result.Select(delivery => new DeliveryModel(delivery.Id, delivery.Name, delivery.Description, delivery.Price)).ToList();
+            var paymentModels = payments.Select(payment => new PaymentModel(payment.Id, payment.Name, payment.Description)).ToList();
+            var discountModels = discounts.Select(discount => new DiscountModel(discount.Id, discount.Name, discount.Description, discount.DiscountPercent)).ToList();
+            var deliveryModels = deliveries.Select(delivery => new DeliveryModel(delivery.Id, delivery.Name, delivery.Description, delivery.Price)).ToList();
 
             return Ok(new OrderSettingsViewModel(paymentModels, discountModels, deliveryModels));
         }

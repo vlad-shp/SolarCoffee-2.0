@@ -20,10 +20,6 @@
 					<v-tab :to="{ name: 'products' }">Products</v-tab>
 					<v-tab :to="{ name: 'inventory' }">Inventory</v-tab>
 					<v-tab :to="{ name: 'orders' }">Orders</v-tab>
-					<v-tab :to="{ name: 'new-order' }">New Order</v-tab>
-					<v-tab :to="{ name: 'order-settings' }"
-						>Order Settings</v-tab
-					>
 				</v-tabs>
 			</template>
 		</v-toolbar>

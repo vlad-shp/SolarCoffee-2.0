@@ -76,7 +76,7 @@
 												'Ideal quantity has to be more then 0',
 										]"
 										label="Ideal quantity"
-										prepend-inner-icon="mdi-note-edit-outline"
+										prepend-inner-icon="mdi-alpha-i-box-outline"
 									/>
 								</v-col>
 								<v-col cols="6">
@@ -89,7 +89,7 @@
 												'Quantity on hand has to be more then 0',
 										]"
 										label="Quantity on hand"
-										prepend-inner-icon="mdi-note-edit-outline"
+										prepend-inner-icon="mdi-alpha-q-box-outline"
 									/>
 								</v-col>
 							</v-row>
