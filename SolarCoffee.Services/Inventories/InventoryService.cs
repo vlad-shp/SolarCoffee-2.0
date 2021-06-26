@@ -11,19 +11,18 @@ namespace SolarCoffee.Services.Inventories
 {
     public class InventoryService : IInventoryService
     {
-        private readonly SolarDbContext _db;
         private readonly ILogger<InventoryService> _logger;
 
-        public InventoryService(SolarDbContext dbContext, ILogger<InventoryService> logger)
+        public InventoryService(ILogger<InventoryService> logger)
         {
-            _db = dbContext;
             _logger = logger;
         }
 
 
         public async Task<List<ProductInventory>> GetInventory()
         {
-            return await _db.ProductInventories
+            await using var db = new SolarDbContext();
+            return await db.ProductInventories
                 .Include(pi => pi.Product)
                 //.Where(pi => !pi.Product.IsArchived)
                 .ToListAsync();
@@ -31,9 +30,10 @@ namespace SolarCoffee.Services.Inventories
 
         public async Task<ProductInventory> UpdateUnitsAvailable(int id, int adjustment)
         {
+            await using var db = new SolarDbContext();
             try
             {
-                var inventory = await _db.ProductInventories
+                var inventory = await db.ProductInventories
                     .Include(inv => inv.Product)
                     .FirstOrDefaultAsync(inv => inv.Product.Id == id);
 
@@ -47,7 +47,7 @@ namespace SolarCoffee.Services.Inventories
 
                 inventory.UpdatedOn = DateTime.Now;
 
-                await _db.SaveChangesAsync();
+                await db.SaveChangesAsync();
 
                 _logger.LogInformation($"Inventory item with id:{id} was updated");
 
@@ -61,7 +61,8 @@ namespace SolarCoffee.Services.Inventories
 
         public async Task<ProductInventory> GetInventoryItemById(int productId)
         {
-            return await _db.ProductInventories
+            await using var db = new SolarDbContext();
+            return await db.ProductInventories
                 .Include(inv => inv.Product)
                 .FirstAsync(inv => inv.Product.Id == productId);
         }

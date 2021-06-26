@@ -101,11 +101,13 @@ namespace SolarCoffee.Web.Controllers
             _logger.LogInformation("Generating new newOrder");
 
 
-            var customer = await _customerService.GetCustomerById(newOrder.CustomerId);
+            var customer = _customerService.GetCustomerById(newOrder.CustomerId);
             var orderStatus = (OrderStatus)newOrder.OrderStatusId;
-            var payment = await _paymentService.GetPaymentMethodById(newOrder.PaymentId);
-            var discount = await _discountService.GetDiscountInstanceById(newOrder.DiscountId);
-            var delivery = await _deliveryService.GetDeliveryMethodById(newOrder.DeliveryId);
+            var payment = _paymentService.GetPaymentMethodById(newOrder.PaymentId);
+            var discount = _discountService.GetDiscountInstanceById(newOrder.DiscountId);
+            var delivery = _deliveryService.GetDeliveryMethodById(newOrder.DeliveryId);
+
+            await Task.WhenAll(customer, payment, discount, delivery);
 
             var salesOrderItems = new List<SalesOrderItem>();
 
@@ -117,12 +119,12 @@ namespace SolarCoffee.Web.Controllers
 
             var salesOrder = new SalesOrder { 
                 Id = 0,
-                Customer = customer,
+                Customer = customer.Result,
                 SalesOrderItems = salesOrderItems,
                 OrderStatus = orderStatus,
-                Delivery = delivery,
-                Payment = payment,
-                Discount = discount,
+                Delivery = delivery.Result,
+                Payment = payment.Result,
+                Discount = discount.Result,
                 AdditionalInfo = newOrder.AdditionalInfo,
                 TotalPrice = newOrder.TotalPrice,
                 CreatedOn = DateTime.Now,

@@ -50,7 +50,10 @@
 							<v-tab-item>
 								<v-card flat>
 									<v-card-text>
-										<v-form v-model="formPaymentValid">
+										<v-form
+											v-model="formPaymentValid"
+											ref="paymentForm"
+										>
 											<v-text-field
 												v-model="payment.name"
 												:rules="[
@@ -94,7 +97,7 @@
 									:items="payments"
 									:loading="!dataLoaded"
 									fixed-header
-								></v-data-table>
+								/>
 							</v-tab-item>
 						</v-tabs-items>
 					</v-tab-item>
@@ -109,7 +112,10 @@
 							<v-tab-item>
 								<v-card flat>
 									<v-card-text>
-										<v-form v-model="formDeliveryValid">
+										<v-form
+											v-model="formDeliveryValid"
+											ref="deliveryForm"
+										>
 											<v-text-field
 												v-model="delivery.name"
 												:rules="[
@@ -182,7 +188,10 @@
 							<v-tab-item>
 								<v-card flat>
 									<v-card-text>
-										<v-form v-model="formDiscountValid">
+										<v-form
+											v-model="formDiscountValid"
+											ref="discountForm"
+										>
 											<v-text-field
 												v-model="discount.name"
 												:rules="[
@@ -264,9 +273,9 @@
 </template>
 
 <script lang="ts">
-import IDelivery from "@/models/delivery";
-import IDiscount from "@/models/discount";
-import IPayment from "@/models/payment";
+import IDelivery from "@/models/request/order/delivery";
+import IDiscount from "@/models/request/order/discount";
+import IPayment from "@/models/request/order/payment";
 import OrderSettingsService from "@/services/order-settings-service";
 import { Component, Vue, Prop, Inject, Watch } from "vue-property-decorator";
 import { DataTableHeader } from "vuetify";
@@ -372,7 +381,12 @@ export default class OrderSettings extends Vue {
 			description: "",
 		};
 		this.snackbar = true;
-
+		const form = this.$refs.paymentForm as Vue & {
+			resetValidation: () => void;
+		};
+		if (form) {
+			form.resetValidation();
+		}
 		//
 	}
 
@@ -386,6 +400,13 @@ export default class OrderSettings extends Vue {
 			description: "",
 		};
 		this.snackbar = true;
+
+		const form = this.$refs.deliveryForm as Vue & {
+			resetValidation: () => void;
+		};
+		if (form) {
+			form.resetValidation();
+		}
 	}
 
 	async onSaveDiscount(): Promise<void> {
@@ -398,8 +419,19 @@ export default class OrderSettings extends Vue {
 			description: "",
 		};
 		this.snackbar = true;
+
+		const form = this.$refs.discountForm as Vue & {
+			resetValidation: () => void;
+		};
+		if (form) {
+			form.resetValidation();
+		}
 	}
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+::v-deep .v-snack__content {
+	text-align: center;
+}
+</style>

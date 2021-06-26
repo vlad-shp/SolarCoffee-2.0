@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using SolarCoffee.Data.Configuration;
 using SolarCoffee.Data.Models;
+
 
 namespace SolarCoffee.Data
 {
@@ -8,6 +10,11 @@ namespace SolarCoffee.Data
     {
         public SolarDbContext() { }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseNpgsql(AppSettings.ConnectionStrings["solar.dev"]);
+        }
 
         public SolarDbContext(DbContextOptions options) : base(options) { }
 

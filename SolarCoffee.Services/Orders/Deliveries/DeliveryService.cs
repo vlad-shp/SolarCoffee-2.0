@@ -8,29 +8,32 @@ namespace SolarCoffee.Services.Orders.Deliveries
 {
     public class DeliveryService : IDeliveryService
     {
-        private SolarDbContext _db;
+        //private SolarDbContext _db;
 
-        public DeliveryService(SolarDbContext db)
-        {
-            _db = db;
-        }
+        //public DeliveryService(SolarDbContext db)
+        //{
+        //    _db = db;
+        //}
 
         public async Task<List<Delivery>> GetDeliveryMethods()
         {
-            return await _db.Deliveries.ToListAsync();
+            await using var db = new SolarDbContext();
+            return await db.Deliveries.ToListAsync();
         }
 
         public async Task<Delivery> AddNewDeliveryMethod(Delivery newDeliveryMethod)
         {
-            await _db.AddAsync(newDeliveryMethod);
-            await _db.SaveChangesAsync();
+            await using var db = new SolarDbContext();
+            await db.AddAsync(newDeliveryMethod);
+            await db.SaveChangesAsync();
 
             return newDeliveryMethod;
         }
 
         public async Task<Delivery> ChangeDeliveryMethod(int deliveryMethodId, Delivery changedDeliveryMethod)
         {
-            var method = await _db.Deliveries.FirstOrDefaultAsync(d => d.Id == deliveryMethodId);
+            await using var db = new SolarDbContext();
+            var method = await db.Deliveries.FirstOrDefaultAsync(d => d.Id == deliveryMethodId);
 
             if (method == null)
             {
@@ -41,28 +44,31 @@ namespace SolarCoffee.Services.Orders.Deliveries
             method.Name = changedDeliveryMethod.Name;
             method.Price = changedDeliveryMethod.Price;
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             return method;
         }
 
         public async Task<Delivery> GetDeliveryMethodById(int deliveryMethodId)
         {
-            return await _db.Deliveries.FirstOrDefaultAsync(d => d.Id == deliveryMethodId);
+            await using var db = new SolarDbContext();
+            return await db.Deliveries.FirstOrDefaultAsync(d => d.Id == deliveryMethodId);
         }
 
         public async Task<bool> RemoveDeliveryMethod(int deliveryMethodId)
         {
-            var method = await _db.Deliveries.FirstOrDefaultAsync(d => d.Id == deliveryMethodId);
+            await using var db = new SolarDbContext();
+
+            var method = await db.Deliveries.FirstOrDefaultAsync(d => d.Id == deliveryMethodId);
 
             if (method == null)
             {
                 return false;
             }
 
-            _db.Remove(method);
+            db.Remove(method);
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             return true;
         }

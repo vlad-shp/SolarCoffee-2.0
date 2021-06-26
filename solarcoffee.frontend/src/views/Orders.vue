@@ -12,7 +12,6 @@
 		<v-card class="pa-12 mt-5">
 			<v-data-table
 				:headers="ordersHeader"
-				:items="orders"
 				:loading="!dataLoaded"
 				fixed-header
 				v-resize="onResize"
@@ -52,7 +51,7 @@
 
 <script lang="ts">
 import { Component, Vue, Inject } from "vue-property-decorator";
-import IOrder from "@/models/order";
+//import { IOrder } from "@/models/request/order/order";
 import { DataTableHeader } from "vuetify";
 import OrderService from "@/services/order-service";
 import NewOrderButton from "@/components/NewOrderButton.vue";
@@ -64,7 +63,7 @@ export default class Order extends Vue {
 
 	dataLoaded = false;
 
-	orders: IOrder[] = [];
+	//orders: IOrder[] = [];
 
 	get ordersHeader(): DataTableHeader[] {
 		return [

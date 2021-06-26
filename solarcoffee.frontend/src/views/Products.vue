@@ -79,7 +79,7 @@
 
 <script lang="ts">
 import { Component, Vue, Inject } from "vue-property-decorator";
-import IProduct from "@/models/product";
+import IProduct from "@/models/request/product";
 import { DataTableHeader } from "vuetify";
 import ProductService from "@/services/product-service";
 import NewProductButton from "@/components/NewProductButtton.vue";

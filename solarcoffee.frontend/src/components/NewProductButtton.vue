@@ -103,7 +103,7 @@
 
 <script lang="ts">
 import { Component, Vue, Watch, Inject, Prop } from "vue-property-decorator";
-import IProduct from "@/models/product";
+import IProduct from "@/models/request/product";
 import ProductService from "@/services/product-service";
 
 @Component

@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import { IShipment } from "@/models/shipment";
+import { IShipment } from "@/models/request/shipment";
 import { Component, Vue, Prop, PropSync } from "vue-property-decorator";
 
 @Component

@@ -1,5 +1,5 @@
-import IInventory from "@/models/inventory";
-import { IShipment } from "@/models/shipment";
+import IInventory from "@/models/request/inventory";
+import { IShipment } from "@/models/request/shipment";
 import axios from "axios";
 
 export default class InventoryService {

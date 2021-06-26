@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts">
-import IProduct from "@/models/product";
+import IProduct from "@/models/request/product";
 import { Component, Vue, Prop, Watch, PropSync } from "vue-property-decorator";
 
 @Component

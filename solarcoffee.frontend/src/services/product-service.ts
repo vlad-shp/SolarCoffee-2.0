@@ -1,4 +1,4 @@
-import IProduct from "@/models/product";
+import IProduct from "@/models/request/product";
 import axios from "axios";
 
 /**

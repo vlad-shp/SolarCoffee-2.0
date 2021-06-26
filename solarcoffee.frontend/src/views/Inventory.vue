@@ -58,8 +58,8 @@
 </template>
 
 <script lang="ts">
-import IInventory from "@/models/inventory";
-import { IShipment } from "@/models/shipment";
+import IInventory from "@/models/request/inventory";
+import { IShipment } from "@/models/request/shipment";
 import InventoryService from "@/services/inventory-service";
 import { Component, Vue, Inject } from "vue-property-decorator";
 import { DataTableHeader } from "vuetify";

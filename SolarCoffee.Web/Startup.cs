@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using SolarCoffee.Data;
+using SolarCoffee.Data.Configuration;
 using SolarCoffee.Services.Customers;
 using SolarCoffee.Services.Inventories;
 using SolarCoffee.Services.Orders;
@@ -34,11 +33,7 @@ namespace SolarCoffee.Web
             services.AddControllers().AddNewtonsoftJson();
             services.AddSwaggerDocument();
 
-            services.AddDbContext<SolarDbContext>(opts =>
-            {
-                opts.EnableDetailedErrors();
-                opts.UseNpgsql(Configuration.GetConnectionString("solar.dev"));
-            });
+            AppSettings.ConnectionStrings.Add("solar.dev", Configuration.GetConnectionString("solar.dev"));
 
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<ICustomerService, CustomerService>();

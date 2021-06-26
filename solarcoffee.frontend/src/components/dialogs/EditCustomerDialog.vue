@@ -148,7 +148,7 @@
 </template>
 
 <script lang="ts">
-import ICustomer from "@/models/customer";
+import ICustomer from "@/models/request/customer/customer";
 import { Component, Vue, Prop, Watch, PropSync } from "vue-property-decorator";
 
 @Component

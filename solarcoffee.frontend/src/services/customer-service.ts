@@ -1,4 +1,4 @@
-import ICustomer from "@/models/customer";
+import ICustomer from "@/models/request/customer/customer";
 import axios from "axios";
 
 /**

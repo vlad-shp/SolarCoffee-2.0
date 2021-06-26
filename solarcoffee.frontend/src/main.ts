@@ -7,8 +7,17 @@ import ProductService from "@/services/product-service";
 import InventoryService from "./services/inventory-service";
 import OrderService from "./services/order-service";
 import OrderSettingsService from "./services/order-settings-service";
+import moment from "moment";
 
 Vue.config.productionTip = false;
+
+Vue.filter("price", function (price: number) {
+	return "$" + price.toFixed(2);
+});
+
+Vue.filter("humanizeDate", function (date: Date) {
+	return moment(date).format("MMMM Do YYYY");
+});
 
 new Vue({
 	vuetify,

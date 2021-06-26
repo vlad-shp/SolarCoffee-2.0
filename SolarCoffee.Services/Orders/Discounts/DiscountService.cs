@@ -8,28 +8,31 @@ namespace SolarCoffee.Services.Orders.Discounts
 {
     public class DiscountService : IDiscountService
     {
-        private SolarDbContext _db;
+        //private SolarDbContext _db;
 
-        public DiscountService(SolarDbContext db)
-        {
-            _db = db;
-        }
+        //public DiscountService(SolarDbContext db)
+        //{
+        //    _db = db;
+        //}
         public async Task<List<Discount>> GetDiscountInstances()
         {
-            return await _db.Discounts.ToListAsync();
+            await using var db = new SolarDbContext();
+            return await db.Discounts.ToListAsync();
         }
 
         public async Task<Discount> AddNewDiscountInstance(Discount newDiscountInstance)
         {
-            await _db.AddAsync(newDiscountInstance);
-            await _db.SaveChangesAsync();
+            await using var db = new SolarDbContext();
+            await db.AddAsync(newDiscountInstance);
+            await db.SaveChangesAsync();
 
             return newDiscountInstance;
         }
 
         public async Task<Discount> ChangeDiscountInstance(int discountInstanceId, Discount changedDiscountInstance)
         {
-            var method = await _db.Discounts.FirstOrDefaultAsync(d => d.Id == discountInstanceId);
+            await using var db = new SolarDbContext();
+            var method = await db.Discounts.FirstOrDefaultAsync(d => d.Id == discountInstanceId);
 
             if (method == null)
             {
@@ -40,28 +43,30 @@ namespace SolarCoffee.Services.Orders.Discounts
             method.Name = changedDiscountInstance.Name;
             method.DiscountPercent = changedDiscountInstance.DiscountPercent;
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             return method;
         }
 
         public async Task<Discount> GetDiscountInstanceById(int discountId)
         {
-            return await _db.Discounts.FirstOrDefaultAsync(d => d.Id == discountId);
+            await using var db = new SolarDbContext();
+            return await db.Discounts.FirstOrDefaultAsync(d => d.Id == discountId);
         }
 
         public async Task<bool> RemoveDiscountInstance(int discountInstanceId)
         {
-            var instance = await _db.Discounts.FirstOrDefaultAsync(d => d.Id == discountInstanceId);
+            await using var db = new SolarDbContext();
+            var instance = await db.Discounts.FirstOrDefaultAsync(d => d.Id == discountInstanceId);
 
             if (instance == null)
             {
                 return false;
             }
 
-            _db.Remove(instance);
+            db.Remove(instance);
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             return true;
         }

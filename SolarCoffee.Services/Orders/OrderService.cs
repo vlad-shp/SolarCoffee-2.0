@@ -12,14 +12,12 @@ namespace SolarCoffee.Services.Orders
 {
     public class OrderService : IOrderService
     {
-        private readonly SolarDbContext _db;
         private readonly ILogger<OrderService> _logger;
         private readonly IProductService _productService;
         private readonly IInventoryService _inventoryService;
 
-        public OrderService(SolarDbContext dbContext, ILogger<OrderService> logger, IProductService productService, IInventoryService inventoryService)
+        public OrderService(ILogger<OrderService> logger, IProductService productService, IInventoryService inventoryService)
         {
-            _db = dbContext;
             _logger = logger;
             _productService = productService;
             _inventoryService = inventoryService;
@@ -27,7 +25,8 @@ namespace SolarCoffee.Services.Orders
 
         public async Task<List<SalesOrder>> GetOrders()
         {
-            return await _db.SalesOrders
+            await using var db = new SolarDbContext();
+            return await db.SalesOrders
                 .Include(o => o.Customer)
                 .ThenInclude(c => c.PrimaryAddress)
                 .Include(o=>o.SalesOrderItems)
@@ -40,6 +39,7 @@ namespace SolarCoffee.Services.Orders
 
         public async Task<bool> CreateOrder(SalesOrder order)
         {
+            await using var db = new SolarDbContext();
             _logger.LogInformation("Generating new order");
 
             foreach (var item in order.SalesOrderItems)
@@ -49,8 +49,8 @@ namespace SolarCoffee.Services.Orders
 
             try
             {
-                await _db.SalesOrders.AddAsync(order);
-                await _db.SaveChangesAsync();
+                await db.SalesOrders.AddAsync(order);
+                await db.SaveChangesAsync();
 
                 return true;
             }
@@ -62,7 +62,8 @@ namespace SolarCoffee.Services.Orders
 
         public async Task<bool> ChangeOrderStatus(int orderId, OrderStatus orderStatus)
         {
-            var order = await _db.SalesOrders.FirstOrDefaultAsync(o => o.Id == orderId);
+            await using var db = new SolarDbContext();
+            var order = await db.SalesOrders.FirstOrDefaultAsync(o => o.Id == orderId);
 
             //order.UpdatedOn = DateTime.Now;
 
@@ -71,7 +72,7 @@ namespace SolarCoffee.Services.Orders
 
                 order.OrderStatus = orderStatus;
 
-                await _db.SaveChangesAsync();
+                await db.SaveChangesAsync();
 
                 return true;
             }

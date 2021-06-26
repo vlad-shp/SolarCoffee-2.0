@@ -11,27 +11,26 @@ namespace SolarCoffee.Services.Customers
 {
     public class CustomerService : ICustomerService
     {
-        private readonly SolarDbContext _db;
         private readonly ILogger<InventoryService> _logger;
 
-        public CustomerService(SolarDbContext dbContext, ILogger<InventoryService> logger)
+        public CustomerService(ILogger<InventoryService> logger)
         {
-            _db = dbContext;
             _logger = logger;
         }
 
         public async Task<Customer> CreateCustomer(Customer customer)
         {
+            await using var db = new SolarDbContext();
             try
             {
-                var customerCopy = await _db.Customers.FirstOrDefaultAsync(x =>
+                var customerCopy = await db.Customers.FirstOrDefaultAsync(x =>
                     x.Email.Contains(customer.Email) || x.PhoneNumber.Contains(customer.PhoneNumber));
                 if (customerCopy != default)
                 {
                     return null;
                 }
-                await _db.Customers.AddAsync(customer);
-                await _db.SaveChangesAsync();
+                await db.Customers.AddAsync(customer);
+                await db.SaveChangesAsync();
 
                 _logger.LogInformation("New customer was created");
                 return customer;
@@ -44,7 +43,8 @@ namespace SolarCoffee.Services.Customers
 
         public async Task<bool> DeleteCustomer(int id)
         {
-            var customer = await _db.Customers.FirstOrDefaultAsync(x => x.Id == id);
+            await using var db = new SolarDbContext();
+            var customer = await db.Customers.FirstOrDefaultAsync(x => x.Id == id);
 
             if (customer == default)
             {
@@ -53,8 +53,8 @@ namespace SolarCoffee.Services.Customers
 
             try
             {
-                _db.Customers.Remove(customer);
-                await _db.SaveChangesAsync();
+                db.Customers.Remove(customer);
+                await db.SaveChangesAsync();
                 _logger.LogInformation($"Customer with id:{id} was removed");
                 return true;
             }
@@ -67,7 +67,8 @@ namespace SolarCoffee.Services.Customers
 
         public async Task<List<Customer>> GetAllCustomers()
         {
-            var customers = await _db.Customers.
+            await using var db = new SolarDbContext();
+            var customers = await db.Customers.
                 Include(customer => customer.PrimaryAddress).
                 ToListAsync();
             return customers;
@@ -75,14 +76,16 @@ namespace SolarCoffee.Services.Customers
 
         public async Task<Customer> GetCustomerById(int id)
         {
-            var customer = await _db.Customers.FirstOrDefaultAsync(x => x.Id == id);
+            await using var db = new SolarDbContext();
+            var customer = await db.Customers.FirstOrDefaultAsync(x => x.Id == id);
 
             return customer;
         }
 
         public async Task<Customer> RefreshCustomer(int id, Customer refreshCustomer)
         {
-            var customer = await _db.Customers.FirstOrDefaultAsync(x => x.Id == id);
+            await using var db = new SolarDbContext();
+            var customer = await db.Customers.FirstOrDefaultAsync(x => x.Id == id);
 
             if (customer == default)
             {
@@ -113,7 +116,7 @@ namespace SolarCoffee.Services.Customers
 
                 customer.UpdatedOn = DateTime.Now;
 
-                await _db.SaveChangesAsync();
+                await db.SaveChangesAsync();
 
                 _logger.LogInformation($"Customer with id:{id} was refreshed");
 

@@ -65,7 +65,7 @@
 </template>
 
 <script lang="ts">
-import ICustomer from "@/models/customer";
+import ICustomer from "@/models/request/customer/customer";
 import { Component, Vue, Inject } from "vue-property-decorator";
 import { DataTableHeader } from "vuetify";
 import NewCustomerButton from "@/components/NewCustomerButton.vue";

@@ -1,7 +1,7 @@
-import IOrderSettings from "@/models/order-settings";
-import IPayment from "@/models/payment";
-import IDelivery from "@/models/delivery";
-import IDiscount from "@/models/discount";
+import IOrderSettings from "@/models/request/order/order-settings";
+import IPayment from "@/models/request/order/payment";
+import IDelivery from "@/models/request/order/delivery";
+import IDiscount from "@/models/request/order/discount";
 import axios from "axios";
 
 /**
