@@ -12,7 +12,7 @@ export enum OrderStatus {
 export interface INewOrder {
 	id: number;
 	customerId: number;
-	items: IOrderItem[];
+	orderItems: IOrderItem[];
 	orderStatus: OrderStatus;
 	deliveryId: number;
 	paymentId: number;

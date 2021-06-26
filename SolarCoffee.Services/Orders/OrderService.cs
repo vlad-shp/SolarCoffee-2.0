@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SolarCoffee.Data;
 using SolarCoffee.Data.Enums;
@@ -26,15 +27,17 @@ namespace SolarCoffee.Services.Orders
         public async Task<List<SalesOrder>> GetOrders()
         {
             await using var db = new SolarDbContext();
-            return await db.SalesOrders
+            var result = await db.SalesOrders
                 .Include(o => o.Customer)
                 .ThenInclude(c => c.PrimaryAddress)
-                .Include(o=>o.SalesOrderItems)
-                .ThenInclude(oi=>oi.Product)
+                .Include(o => o.SalesOrderItems)
+                .ThenInclude(oi => oi.Product)
                 .Include(o => o.Payment)
                 .Include(o => o.Discount)
                 .Include(o => o.Delivery)
                 .ToListAsync();
+
+            return result;
         }
 
         public async Task<bool> CreateOrder(SalesOrder order)
@@ -49,7 +52,8 @@ namespace SolarCoffee.Services.Orders
 
             try
             {
-                await db.SalesOrders.AddAsync(order);
+                db.Update(order);
+
                 await db.SaveChangesAsync();
 
                 return true;

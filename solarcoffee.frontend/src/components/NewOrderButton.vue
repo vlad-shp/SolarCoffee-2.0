@@ -228,7 +228,7 @@
 								/>
 							</v-col>
 							<v-col cols="3" class="text-right">
-								Invoice #: 123<br />
+								Invoice #: {{ newOrderId }}<br />
 								Created: {{ new Date() | humanizeDate }}<br />
 								Due: {{ new Date() | humanizeDate }}
 							</v-col>
@@ -377,14 +377,31 @@
 						<v-divider />
 					</v-card>
 
-					<v-btn color="primary" @click="confirmOrder" class="mr-3">
+					<v-btn
+						color="primary"
+						@click="confirmOrder"
+						class="mr-3"
+						v-if="!showSuccessfulMsg"
+					>
 						Confirm
 					</v-btn>
-					<v-btn color="primary" @click="step--" class="mr-3">
+					<v-btn
+						color="primary"
+						@click="step--"
+						v-if="!showSuccessfulMsg"
+						class="mr-3"
+					>
 						Back
 					</v-btn>
 
-					<v-btn text @click="cancel"> Cancel </v-btn>
+					<v-alert dense text type="success" v-if="showSuccessfulMsg">
+						Order was created successfully!
+					</v-alert>
+
+					<v-btn text @click="cancel">
+						<span v-if="!showSuccessfulMsg">Cancel</span>
+						<span v-else>Close</span>
+					</v-btn>
 				</v-stepper-content>
 			</v-stepper-items>
 		</v-stepper>
@@ -410,7 +427,7 @@ import IPayment from "@/models/request/order/payment";
 import IDelivery from "@/models/request/order/delivery";
 import IDiscount from "@/models/request/order/discount";
 import IProduct from "@/models/request/product";
-import { OrderStatus } from "@/models/request/order/order";
+import { INewOrder, OrderStatus } from "@/models/request/order/new-order";
 import { DataTableHeader } from "vuetify";
 import IOrderItemView from "@/models/view/order-item-view";
 import IOrderView from "@/models/view/order-view";
@@ -419,6 +436,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import moment from "moment";
 import Loading from "@/components/Loading.vue";
+import IOrderItem from "@/models/request/order/order-item";
 
 @Component({ components: { Loading } })
 export default class NewOrderButton extends Vue {
@@ -430,9 +448,14 @@ export default class NewOrderButton extends Vue {
 	@Prop({ required: true })
 	disabledButton!: boolean;
 
+	@Prop({ required: true })
+	newOrderId!: number;
+
 	step = 1;
 
 	showGeneratedPdf = false;
+	showSuccessfulMsg = false;
+
 	generatedPdfUri = "";
 
 	newOrder: IOrderView = {
@@ -474,10 +497,12 @@ export default class NewOrderButton extends Vue {
 			description: "",
 			discountPercent: 0,
 		},
-		items: [],
+		orderItems: [],
 		orderStatus: OrderStatus.Created,
 		additionalInfo: "",
 		totalPrice: 0,
+		createdOn: new Date(),
+		updatedOn: new Date(),
 	};
 
 	dialog = false;
@@ -642,6 +667,7 @@ export default class NewOrderButton extends Vue {
 	async onStepChange(newStep: number): Promise<void> {
 		if (newStep === 2) {
 			await this.getAvailableProducts();
+			this.showSuccessfulMsg = false;
 		}
 		if (newStep === 3) {
 			await this.getOrderSettings();
@@ -725,10 +751,6 @@ export default class NewOrderButton extends Vue {
 		this.newOrder.delivery = delivery;
 	}
 
-	addNewOrder(): void {
-		//
-	}
-
 	removeFromOrderItems(item: IOrderItemView): void {
 		const index = this.orderItems.indexOf(item);
 		if (index > -1) {
@@ -779,10 +801,12 @@ export default class NewOrderButton extends Vue {
 				description: "",
 				discountPercent: 0,
 			},
-			items: [],
+			orderItems: [],
 			orderStatus: OrderStatus.Created,
 			additionalInfo: "",
 			totalPrice: 0,
+			createdOn: new Date(),
+			updatedOn: new Date(),
 		};
 
 		this.orderItem = {
@@ -816,7 +840,34 @@ export default class NewOrderButton extends Vue {
 	}
 
 	async confirmOrder(): Promise<void> {
-		this.newOrder.items = this.orderItems;
+		this.newOrder.orderItems = this.orderItems;
+
+		const itemsMap: IOrderItem[] = [];
+
+		for (const index in this.orderItems) {
+			itemsMap.push({
+				id: this.orderItems[index].id,
+				productId: this.orderItems[index].product.id,
+				quantity: this.orderItems[index].quantity,
+			});
+		}
+
+		const newOrder: INewOrder = {
+			id: this.newOrder.id,
+			orderItems: itemsMap,
+			customerId: this.newOrder.customer.id,
+			orderStatus: this.newOrder.orderStatus,
+			deliveryId: this.newOrder.delivery.id,
+			paymentId: this.newOrder.payment.id,
+			discountId: this.newOrder.discount.id,
+			additionalInfo: this.newOrder.additionalInfo,
+			totalPrice: this.newOrder.totalPrice,
+		};
+
+		await this.orderService.addNewOrder(newOrder);
+
+		this.showSuccessfulMsg = true;
+
 		this.generatePDF();
 	}
 
@@ -833,7 +884,7 @@ export default class NewOrderButton extends Vue {
 		pdf.setFontSize(10);
 
 		//order-info-block
-		pdf.text("Invoice #: 123", 20, 0.7, { align: "right" });
+		pdf.text(`Invoice #: ${this.newOrderId}`, 20, 0.7, { align: "right" });
 		pdf.text(
 			`Created: ${moment(new Date()).format("MMMM Do YYYY")}`,
 			20,
@@ -877,14 +928,15 @@ export default class NewOrderButton extends Vue {
 
 		for (const item in this.orderItems) {
 			bodyContent.push({
-				product: this.newOrder.items[item].product.name,
-				quantity: this.newOrder.items[item].product.name.toString(),
-				unitCost: `$${this.newOrder.items[item].product.price.toFixed(
-					2
-				)}`,
+				product: this.newOrder.orderItems[item].product.name,
+				quantity:
+					this.newOrder.orderItems[item].product.name.toString(),
+				unitCost: `$${this.newOrder.orderItems[
+					item
+				].product.price.toFixed(2)}`,
 				price: `$${(
-					this.newOrder.items[item].product.price *
-					this.newOrder.items[item].quantity
+					this.newOrder.orderItems[item].product.price *
+					this.newOrder.orderItems[item].quantity
 				).toFixed(2)}`,
 			});
 		}
@@ -1123,7 +1175,7 @@ export default class NewOrderButton extends Vue {
 		this.generatedPdfUri = pdf.output("datauristring");
 		this.showGeneratedPdf = true;
 		//pdf.output("dataurlnewwindow");
-		//save("test.pdf");
+		//pdf.save("test.pdf");
 	}
 }
 </script>

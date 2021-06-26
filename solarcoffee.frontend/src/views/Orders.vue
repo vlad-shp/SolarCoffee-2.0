@@ -4,7 +4,10 @@
 			<v-row align="center" justify="space-between">
 				<span class="black--text text-h5">Orders</span>
 				<div>
-					<new-order-button :disabledButton="!dataLoaded" />
+					<new-order-button
+						:disabledButton="!dataLoaded"
+						:newOrderId="newOrderId"
+					/>
 					<order-settings-button :disabledButton="!dataLoaded" />
 				</div>
 			</v-row>
@@ -12,6 +15,7 @@
 		<v-card class="pa-12 mt-5">
 			<v-data-table
 				:headers="ordersHeader"
+				:items="orders"
 				:loading="!dataLoaded"
 				fixed-header
 				v-resize="onResize"
@@ -37,6 +41,9 @@
 						</v-tooltip>
 					</v-row>
 				</template>
+				<template #[`item.createdOn`]="{ item }">
+					{{ convertDate(item.createdOn) }}
+				</template>
 			</v-data-table>
 		</v-card>
 
@@ -51,11 +58,12 @@
 
 <script lang="ts">
 import { Component, Vue, Inject } from "vue-property-decorator";
-//import { IOrder } from "@/models/request/order/order";
 import { DataTableHeader } from "vuetify";
 import OrderService from "@/services/order-service";
 import NewOrderButton from "@/components/NewOrderButton.vue";
 import OrderSettingsButton from "@/components/OrderSettingsButton.vue";
+import IOrderView from "@/models/view/order-view";
+import moment from "moment";
 
 @Component({ components: { NewOrderButton, OrderSettingsButton } })
 export default class Order extends Vue {
@@ -63,7 +71,9 @@ export default class Order extends Vue {
 
 	dataLoaded = false;
 
-	//orders: IOrder[] = [];
+	orders: IOrderView[] = [];
+
+	newOrderId = 1;
 
 	get ordersHeader(): DataTableHeader[] {
 		return [
@@ -87,14 +97,22 @@ export default class Order extends Vue {
 		];
 	}
 
+	convertDate(date: string): string {
+		return moment(Date.parse(date)).format("MMMM Do YYYY");
+	}
+
 	async created(): Promise<void> {
 		await this.initialize();
 	}
 
 	async initialize(): Promise<void> {
 		this.dataLoaded = false;
-		//this.orders = await this.orderService.getOrders();
+		this.orders = await this.orderService.getOrders();
 		this.dataLoaded = true;
+
+		if (this.orders.length > 0) {
+			this.newOrderId = this.orders[this.orders.length - 1].id;
+		}
 	}
 
 	openReceiveShipmentDialog(item: unknown): void {
