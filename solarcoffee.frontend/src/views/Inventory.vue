@@ -144,7 +144,7 @@ export default class Inventory extends Vue {
 		if (item.product.isArchived === true) {
 			return "black";
 		}
-		if (item.quantityOnHand === 0) {
+		if (item.quantityOnHand <= 0) {
 			return "red";
 		}
 		if (item.quantityOnHand < item.idealQuantity) {

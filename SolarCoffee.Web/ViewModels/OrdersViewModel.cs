@@ -8,7 +8,7 @@ namespace SolarCoffee.Web.ViewModels
     public record OrdersViewModel(
         int Id,
         Customer Customer,
-        List<OrderItemModel> OrderItems,
+        List<OrderItemViewModel> OrderItems,
         OrderStatus OrderStatus,
         DeliveryModel Delivery,
         PaymentModel Payment,

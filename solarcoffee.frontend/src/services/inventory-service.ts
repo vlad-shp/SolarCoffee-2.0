@@ -18,4 +18,13 @@ export default class InventoryService {
 		);
 		return result.data;
 	}
+
+	public async getInventoryItemByProductId(
+		productId: number
+	): Promise<IInventory> {
+		const result = await axios.get<IInventory>(
+			`${this.API_URL}/inventory/${productId}`
+		);
+		return result.data;
+	}
 }

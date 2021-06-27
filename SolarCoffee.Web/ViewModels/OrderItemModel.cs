@@ -1,4 +1,4 @@
-﻿namespace SolarCoffee.Web.ViewModels
+﻿namespace SolarCoffee.Services.Models
 {
     public record OrderItemModel(
         int Id,

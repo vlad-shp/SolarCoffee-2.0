@@ -10,5 +10,6 @@ namespace SolarCoffee.Services.Orders
         Task<List<SalesOrder>> GetOrders();
         Task<bool> CreateOrder(SalesOrder order);
         Task<bool> ChangeOrderStatus(int orderId, OrderStatus orderStatus);
+        Task<int> GetOrderItemNextId();
     }
 }

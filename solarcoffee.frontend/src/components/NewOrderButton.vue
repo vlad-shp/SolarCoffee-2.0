@@ -72,27 +72,45 @@
 							:items="productSelect"
 							label="Product"
 							v-model="orderItem.product"
+							@change="productSelected"
 						/>
 						<v-row>
 							<v-col cols="7">
 								<v-text-field
-									:disabled="orderItem.product.id == -1"
+									:disabled="
+										orderItem.product.id == -1 ||
+										this.maxQuantityOnHand === 0
+									"
 									v-model.number="orderItem.quantity"
 									:rules="[
 										(v) =>
-											(!isNaN(parseInt(v)) && v > 0) ||
-											'Quantity has to be more then 0',
+											(!isNaN(parseInt(v)) &&
+												v > 0 &&
+												v <= maxQuantityOnHand) ||
+											errorMsg,
 									]"
 									label="Quantity"
 									prepend-inner-icon="mdi-alpha-q-box-outline"
 								/>
 							</v-col>
-							<v-col cols="5">
+							<v-col cols="2">
+								<v-text-field
+									readonly
+									label="Awailable"
+									:value="maxQuantityOnHand"
+									prepend-inner-icon="mdi-alpha-a-box-outline"
+								/>
+							</v-col>
+							<v-col cols="3">
 								<v-row justify="center">
 									<v-btn
 										color="primary"
 										@click="addToOrderItems"
-										:disabled="orderItem.quantity <= 0"
+										:disabled="
+											orderItem.quantity <= 0 ||
+											orderItem.quantity >
+												maxQuantityOnHand
+										"
 										class="ma-5"
 									>
 										Add to order
@@ -398,10 +416,10 @@
 						Order was created successfully!
 					</v-alert>
 
-					<v-btn text @click="cancel">
-						<span v-if="!showSuccessfulMsg">Cancel</span>
-						<span v-else>Close</span>
+					<v-btn text @click="cancel" v-if="!showSuccessfulMsg">
+						Cancel
 					</v-btn>
+					<v-btn text @click="close" v-else> Close </v-btn>
 				</v-stepper-content>
 			</v-stepper-items>
 		</v-stepper>
@@ -437,6 +455,7 @@ import autoTable from "jspdf-autotable";
 import moment from "moment";
 import Loading from "@/components/Loading.vue";
 import IOrderItem from "@/models/request/order/order-item";
+import InventoryService from "@/services/inventory-service";
 
 @Component({ components: { Loading } })
 export default class NewOrderButton extends Vue {
@@ -444,6 +463,7 @@ export default class NewOrderButton extends Vue {
 	@Inject() readonly customerService!: CustoemrService;
 	@Inject() readonly productService!: ProductService;
 	@Inject() readonly orderSettingsService!: OrderSettingsService;
+	@Inject() readonly inventoryService!: InventoryService;
 
 	@Prop({ required: true })
 	disabledButton!: boolean;
@@ -652,6 +672,10 @@ export default class NewOrderButton extends Vue {
 		return this.payments.map((c) => new SelectItem(c.name, c));
 	}
 
+	get errorMsg(): string {
+		return `Quantity has to be more then 0 and less than ${this.maxQuantityOnHand}`;
+	}
+
 	dataLoaded = false;
 
 	@Watch("dialog")
@@ -686,6 +710,12 @@ export default class NewOrderButton extends Vue {
 		}
 	}
 
+	async quantityOnHand(productId: number): Promise<number> {
+		return (
+			await this.inventoryService.getInventoryItemByProductId(productId)
+		).quantityOnHand;
+	}
+
 	async getCustomers(): Promise<void> {
 		this.customers = await this.customerService.getCustomers();
 	}
@@ -704,7 +734,10 @@ export default class NewOrderButton extends Vue {
 	}
 
 	addToOrderItems(): void {
-		if (this.orderItem.quantity > 0) {
+		if (
+			this.orderItem.quantity > 0 &&
+			this.orderItem.quantity <= this.maxQuantityOnHand
+		) {
 			const index = this.orderItems.findIndex(
 				(oi) => oi.product.id === this.orderItem.product.id
 			);
@@ -733,10 +766,26 @@ export default class NewOrderButton extends Vue {
 			},
 			quantity: 0,
 		};
+
+		this.maxQuantityOnHand = 0;
 	}
 
-	productSelected(product: IProduct): void {
-		this.orderItem.product = product;
+	maxQuantityOnHand = 0;
+
+	async productSelected(product: IProduct): Promise<void> {
+		this.maxQuantityOnHand = await this.quantityOnHand(product.id);
+
+		const itemInOrderItems = this.orderItems.find(
+			(item) => item.product.id === product.id
+		);
+
+		if (itemInOrderItems) {
+			this.maxQuantityOnHand -= itemInOrderItems.quantity;
+		}
+
+		if (this.maxQuantityOnHand < 0) {
+			this.maxQuantityOnHand = 0;
+		}
 	}
 
 	discountSelected(discount: IDiscount): void {
@@ -756,6 +805,11 @@ export default class NewOrderButton extends Vue {
 		if (index > -1) {
 			this.orderItems.splice(index, 1);
 		}
+	}
+
+	close(): void {
+		this.cancel();
+		this.$emit("addedNewOrder");
 	}
 
 	cancel(): void {
@@ -836,6 +890,7 @@ export default class NewOrderButton extends Vue {
 			wrapper.style.maxHeight =
 				window.innerWidth > 1888 ? "70vh" : "62vh";
 			wrapper.style.height = "100%";
+			wrapper.style.overflowY = "auto";
 		}
 	}
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SolarCoffee.Data;
@@ -7,6 +8,7 @@ using SolarCoffee.Data.Models;
 using SolarCoffee.Services.Inventories;
 using SolarCoffee.Services.Products;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SolarCoffee.Services.Orders
@@ -45,20 +47,39 @@ namespace SolarCoffee.Services.Orders
             await using var db = new SolarDbContext();
             _logger.LogInformation("Generating new order");
 
+            var tasks = new List<Task>();
+
             foreach (var item in order.SalesOrderItems)
             {
-                await _inventoryService.UpdateUnitsAvailable(item.Product.Id, -item.Quantity);
+                item.ProductId = item.Product.Id;
+
+
+                tasks.Add(_inventoryService.UpdateUnitsAvailable(item.Product.Id, -item.Quantity));
+
+                item.Product = null;
             }
 
-            try
-            {
-                db.Update(order);
+            await Task.WhenAll(tasks.ToArray());
+            //try
+            //{
+                order.DiscountId = order.Discount.Id;
+                order.PaymentId = order.Payment.Id;
+                order.CustomerId = order.Customer.Id;
+                order.DeliveryId = order.Delivery.Id;
+
+                order.Discount = null;
+                order.Delivery = null;
+                order.Payment = null;
+                order.Customer = null;
+
+
+                await db.SalesOrders.AddAsync(order);
 
                 await db.SaveChangesAsync();
 
                 return true;
-            }
-            catch
+            //}
+            //catch
             {
                 return false;
             }
@@ -84,6 +105,17 @@ namespace SolarCoffee.Services.Orders
             {
                 return false;
             }
+        }
+
+        public async Task<int> GetOrderItemNextId()
+        {
+            await using var db = new SolarDbContext();
+
+            var lastOrderItemRow = await db.SalesOrderItems.OrderBy(p => p.Id).LastAsync();
+
+            _logger.LogInformation(lastOrderItemRow.Id.ToString());
+
+            return lastOrderItemRow.Id + 1;
         }
     }
 }

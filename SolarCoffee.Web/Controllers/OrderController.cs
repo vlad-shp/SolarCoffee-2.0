@@ -49,7 +49,7 @@ namespace SolarCoffee.Web.Controllers
 
             foreach (var order in orders)
             {
-                var salesOrderItems = order.SalesOrderItems.Select(orderItem => new OrderItemModel(orderItem.Id, orderItem.Quantity, orderItem.Product.Id)).ToList();
+                var salesOrderItems = order.SalesOrderItems.Select(orderItem => new OrderItemViewModel(orderItem.Id, orderItem.Quantity, orderItem.Product)).ToList();
 
                 orderViews.Add(new OrdersViewModel(
                     order.Id, 
@@ -106,15 +106,19 @@ namespace SolarCoffee.Web.Controllers
             var payment = _paymentService.GetPaymentMethodById(newOrder.PaymentId);
             var discount = _discountService.GetDiscountInstanceById(newOrder.DiscountId);
             var delivery = _deliveryService.GetDeliveryMethodById(newOrder.DeliveryId);
+            var nextOrderItemsIndexTask = _orderService.GetOrderItemNextId();
 
-            await Task.WhenAll(customer, payment, discount, delivery);
+            await Task.WhenAll(customer, payment, discount, delivery, nextOrderItemsIndexTask);
 
             var salesOrderItems = new List<SalesOrderItem>();
+
+            var orderItemId = nextOrderItemsIndexTask.Result;
 
             foreach (var (id,quantity, productId) in newOrder.OrderItems)
             {
                 var product = await _productService.GetProductById(productId);
-                salesOrderItems.Add(new SalesOrderItem {Id = id, Quantity = quantity, Product = product});
+                salesOrderItems.Add(new SalesOrderItem {Id = orderItemId, Quantity = quantity, Product = product});
+                orderItemId++;
             }
 
             var salesOrder = new SalesOrder { 

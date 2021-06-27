@@ -34,6 +34,18 @@ namespace SolarCoffee.Web.Controllers
             return Ok(inventory);
         }
 
+        [HttpGet("/api/inventory/{productId}")]
+        [ProducesResponseType(typeof(List<ProductInventory>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetInventoryItemByProductId(int productId)
+        {
+
+            _logger.LogInformation($"Getting inventory by product id ({productId})...");
+
+            var inventory = await _inventoryService.GetInventoryItemById(productId);
+
+            return Ok(inventory);
+        }
+
         [HttpPatch("/api/inventory")]
         [ProducesResponseType(typeof(ProductInventory), (int)HttpStatusCode.OK)]
         public async Task<ActionResult> UpdateInventory([FromBody] ShipmentModel shipment)

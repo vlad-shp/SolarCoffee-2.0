@@ -7,6 +7,7 @@
 					<new-order-button
 						:disabledButton="!dataLoaded"
 						:newOrderId="newOrderId"
+						@addedNewOrder="initialize"
 					/>
 					<order-settings-button :disabledButton="!dataLoaded" />
 				</div>
@@ -16,33 +17,50 @@
 			<v-data-table
 				:headers="ordersHeader"
 				:items="orders"
-				:loading="!dataLoaded"
-				fixed-header
-				v-resize="onResize"
-				sort-by="product.name"
+				:single-expand="singleExpand"
+				:expanded.sync="expanded"
+				show-expand
+				@click:row="(item, slot) => slot.expand(!slot.isExpanded)"
 			>
-				<template #[`item.actions`]="{ item }">
-					<v-row justify="center">
-						<v-tooltip top>
-							<template v-slot:activator="{ on, attrs }">
-								<v-btn
-									v-on="on"
-									v-bind="attrs"
-									@click="openReceiveShipmentDialog(item)"
-									elevation="0"
-									icon
-								>
-									<v-icon color="#149000"
-										>mdi-truck-delivery-outline</v-icon
-									>
-								</v-btn>
-							</template>
-							<span>Receive shipment</span>
-						</v-tooltip>
-					</v-row>
+				<template #top>
+					<v-toolbar flat>
+						<v-switch
+							v-model="singleExpand"
+							label="Single expand"
+						></v-switch>
+					</v-toolbar>
+				</template>
+				<template #[`item.customer`]="{ item }">
+					{{
+						`${item.customer.id}, ${item.customer.firstName} ${item.customer.lastName}`
+					}}
 				</template>
 				<template #[`item.createdOn`]="{ item }">
 					{{ convertDate(item.createdOn) }}
+				</template>
+				<template #[`item.orderStatus`]="{ item }">
+					{{ convertStatusToString(item.orderStatus) }}
+				</template>
+				<template #[`item.totalPrice`]="{ item }">
+					{{ item.totalPrice | price }}
+				</template>
+				<template #[`item.actions`]="{ item }">
+					{{ item.id }}
+				</template>
+				<template #expanded-item="{ headers, item }">
+					<td :colspan="headers.length" class="pa-0">
+						<v-data-table
+							:headers="orderItemHeader"
+							:items="item.orderItems"
+							:hide-default-footer="true"
+						>
+							<template #[`item.lineTotal`]="{ item }">
+								{{
+									(item.product.price * item.quantity) | price
+								}}
+							</template>
+						</v-data-table>
+					</td>
 				</template>
 			</v-data-table>
 		</v-card>
@@ -64,25 +82,29 @@ import NewOrderButton from "@/components/NewOrderButton.vue";
 import OrderSettingsButton from "@/components/OrderSettingsButton.vue";
 import IOrderView from "@/models/view/order-view";
 import moment from "moment";
+import { OrderStatus } from "@/models/request/order/new-order";
 
 @Component({ components: { NewOrderButton, OrderSettingsButton } })
 export default class Order extends Vue {
 	@Inject() readonly orderService!: OrderService;
 
 	dataLoaded = false;
+	singleExpand = true;
 
 	orders: IOrderView[] = [];
 
 	newOrderId = 1;
 
+	expanded = [];
+
 	get ordersHeader(): DataTableHeader[] {
 		return [
-			{ text: "Customer", value: "customer.id", align: "center" },
-			{ text: "Payment", value: "payment.id", align: "center" },
-			{ text: "Discount", value: "discount.id", align: "center" },
+			{ text: "Customer", value: "customer", align: "center" },
+			{ text: "Payment", value: "payment.name", align: "center" },
+			{ text: "Discount", value: "discount.name", align: "center" },
 			{
 				text: "Delivery",
-				value: "delivery.id",
+				value: "delivery.name",
 				align: "center",
 			},
 			{ text: "Status", value: "orderStatus", align: "center" },
@@ -97,8 +119,47 @@ export default class Order extends Vue {
 		];
 	}
 
+	get orderItemHeader(): DataTableHeader[] {
+		return [
+			{
+				text: "Product Id",
+				value: "product.id",
+				align: "center",
+				divider: true,
+			},
+			{
+				text: "Product Name",
+				value: "product.name",
+				align: "center",
+				divider: true,
+			},
+			{
+				text: "Quantity",
+				value: "quantity",
+				align: "center",
+				divider: true,
+			},
+			{
+				text: "Unit Cost",
+				value: "product.price",
+				align: "center",
+				divider: true,
+			},
+			{
+				text: "Price",
+				value: "lineTotal",
+				align: "center",
+				divider: true,
+			},
+		];
+	}
+
 	convertDate(date: string): string {
 		return moment(Date.parse(date)).format("MMMM Do YYYY");
+	}
+
+	convertStatusToString(status: number): string {
+		return OrderStatus[status];
 	}
 
 	async created(): Promise<void> {

@@ -1,5 +1,5 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SolarCoffee.Services.Models;
 
 namespace SolarCoffee.Web.ViewModels
 {
@@ -12,4 +12,6 @@ namespace SolarCoffee.Web.ViewModels
         int DiscountId,
         string AdditionalInfo,
         decimal TotalPrice);
+
+
 }
