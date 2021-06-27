@@ -167,5 +167,3 @@ export default class Products extends Vue {
 	}
 }
 </script>
-
-<style scoped></style>

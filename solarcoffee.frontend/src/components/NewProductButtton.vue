@@ -18,7 +18,7 @@
 					<v-btn
 						:disabled="!formValid"
 						elevation="0"
-						color="secondary"
+						color="primary"
 						@click="addNewCustomer"
 					>
 						<v-icon color="white">mdi-plus</v-icon>
@@ -165,4 +165,6 @@ export default class NewProductButton extends Vue {
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+@import "@/scss/global.scss";
+</style>

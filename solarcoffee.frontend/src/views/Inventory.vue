@@ -173,5 +173,3 @@ export default class Inventory extends Vue {
 	}
 }
 </script>
-
-<style scoped></style>

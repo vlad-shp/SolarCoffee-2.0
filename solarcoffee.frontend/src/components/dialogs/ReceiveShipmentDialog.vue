@@ -72,4 +72,6 @@ export default class ReceiveShipmentDialog extends Vue {
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+@import "@/scss/global.scss";
+</style>

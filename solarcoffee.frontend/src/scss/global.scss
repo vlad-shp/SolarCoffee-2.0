@@ -1,0 +1,13 @@
+$solar-orange: #ffaa4d;
+
+::v-deep .v-stepper__step__step.primary,
+::v-deep .v-btn.primary {
+	background-color: $solar-orange !important;
+	border-color: $solar-orange !important;
+}
+
+::v-deep .primary--text,
+.v-btn.blue--text {
+	color: $solar-orange !important;
+	caret-color: $solar-orange !important;
+}

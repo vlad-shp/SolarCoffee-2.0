@@ -430,7 +430,9 @@ export default class OrderSettings extends Vue {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import "@/scss/global.scss";
+
 ::v-deep .v-snack__content {
 	text-align: center;
 }

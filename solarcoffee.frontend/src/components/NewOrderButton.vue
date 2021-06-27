@@ -14,7 +14,11 @@
 		<loading msg="Connecting to server..." v-if="!dataLoaded" />
 		<v-stepper v-model="step" v-else>
 			<v-stepper-header>
-				<v-stepper-step :complete="step > 1" step="1">
+				<v-stepper-step
+					:complete="step > 1"
+					step="1"
+					class="solar-button"
+				>
 					Select customer
 				</v-stepper-step>
 
@@ -49,7 +53,7 @@
 						color="primary"
 						@click="step++"
 						:disabled="newOrder.customer.id === -1"
-						class="mr-3"
+						class="mr-3 solar-button"
 					>
 						Continue
 					</v-btn>
@@ -57,7 +61,7 @@
 						color="primary"
 						@click="step--"
 						disabled
-						class="mr-3"
+						class="mr-3 solar-button"
 					>
 						Back
 					</v-btn>
@@ -111,7 +115,7 @@
 											orderItem.quantity >
 												maxQuantityOnHand
 										"
-										class="ma-5"
+										class="ma-5 solar-button"
 									>
 										Add to order
 									</v-btn>
@@ -180,11 +184,15 @@
 						color="primary"
 						@click="step++"
 						:disabled="!orderItems.length"
-						class="mr-3"
+						class="mr-3 solar-button"
 					>
 						Continue
 					</v-btn>
-					<v-btn color="primary" @click="step--" class="mr-3">
+					<v-btn
+						color="primary solar-button"
+						@click="step--"
+						class="mr-3"
+					>
 						Back
 					</v-btn>
 
@@ -213,10 +221,18 @@
 						/>
 					</v-card>
 
-					<v-btn color="primary" @click="step++" class="mr-3">
+					<v-btn
+						color="primary solar-button"
+						@click="step++"
+						class="mr-3"
+					>
 						Continue
 					</v-btn>
-					<v-btn color="primary" @click="step--" class="mr-3">
+					<v-btn
+						color="primary solar-button"
+						@click="step--"
+						class="mr-3"
+					>
 						Back
 					</v-btn>
 
@@ -398,7 +414,7 @@
 					<v-btn
 						color="primary"
 						@click="confirmOrder"
-						class="mr-3"
+						class="mr-3 solar-button"
 						v-if="!showSuccessfulMsg"
 					>
 						Confirm
@@ -407,7 +423,7 @@
 						color="primary"
 						@click="step--"
 						v-if="!showSuccessfulMsg"
-						class="mr-3"
+						class="mr-3 solar-button"
 					>
 						Back
 					</v-btn>
@@ -419,7 +435,15 @@
 					<v-btn text @click="cancel" v-if="!showSuccessfulMsg">
 						Cancel
 					</v-btn>
-					<v-btn text @click="close" v-else> Close </v-btn>
+					<v-btn
+						text
+						@click="close"
+						class="ma-3 solar-button"
+						color="primary"
+						v-else
+					>
+						Close
+					</v-btn>
 				</v-stepper-content>
 			</v-stepper-items>
 		</v-stepper>
@@ -1235,7 +1259,9 @@ export default class NewOrderButton extends Vue {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import "@/scss/global.scss";
+
 ::v-deep .dialog-wrapper.v-dialog {
 	overflow-y: hidden !important;
 }

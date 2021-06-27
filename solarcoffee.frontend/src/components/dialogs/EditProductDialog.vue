@@ -110,4 +110,6 @@ export default class EditProductDialog extends Vue {
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+@import "@/scss/global.scss";
+</style>
