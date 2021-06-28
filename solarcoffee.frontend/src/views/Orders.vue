@@ -19,6 +19,7 @@
 				:items="orders"
 				:single-expand="singleExpand"
 				:expanded.sync="expanded"
+				:loading="!dataLoaded"
 				show-expand
 				@click:row="(item, slot) => slot.expand(!slot.isExpanded)"
 			>

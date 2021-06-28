@@ -9,6 +9,7 @@ export default class ProductService {
 
 	public async getProducts(): Promise<IProduct[]> {
 		const result = await axios.get<IProduct[]>(`${this.API_URL}/product/`);
+
 		return result.data;
 	}
 

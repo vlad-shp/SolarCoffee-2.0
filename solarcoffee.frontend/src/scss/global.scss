@@ -1,7 +1,8 @@
 $solar-orange: #ffaa4d;
 
 ::v-deep .v-stepper__step__step.primary,
-::v-deep .v-btn.primary {
+::v-deep .v-btn.primary,
+::v-deep .primary {
 	background-color: $solar-orange !important;
 	border-color: $solar-orange !important;
 }

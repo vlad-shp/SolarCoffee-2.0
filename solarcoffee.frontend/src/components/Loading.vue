@@ -5,10 +5,7 @@
 				{{ msg }}
 			</v-col>
 			<v-col cols="6">
-				<v-progress-linear
-					indeterminate
-					color="blue"
-				></v-progress-linear>
+				<v-progress-linear indeterminate></v-progress-linear>
 			</v-col>
 		</v-row>
 	</v-container>
@@ -24,4 +21,6 @@ export default class Loading extends Vue {
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+@import "@/scss/global.scss";
+</style>

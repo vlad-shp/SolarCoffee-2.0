@@ -1,15 +1,17 @@
 <template>
 	<div>
 		<v-row no-gutters justify="center">
+			<loading msg="Loading items..." v-if="!dataLoaded" />
 			<v-col
+				v-else
 				cols="12"
 				sm="6"
 				md="3"
-				v-for="n in 15"
-				:key="n"
+				v-for="product in products"
+				:key="product.id"
 				class="pa-4"
 			>
-				<v-card :loading="loading" max-width="374">
+				<v-card max-width="374">
 					<template slot="progress">
 						<v-progress-linear
 							color="deep-purple"
@@ -19,11 +21,12 @@
 					</template>
 
 					<v-img
-						height="250"
-						src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
+						height="200"
+						src="../assets/logo.png"
+						style="height: 100%"
 					></v-img>
 
-					<v-card-title>Cafe Badilico</v-card-title>
+					<v-card-title>{{ product.name }}</v-card-title>
 
 					<v-card-text>
 						<v-row align="center" class="mx-0">
@@ -40,42 +43,19 @@
 						</v-row>
 
 						<div class="my-4 text-subtitle-1">
-							$ • Italian, Cafe
+							{{ product.price | price }}
 						</div>
 
 						<div>
-							Small plates, salads & sandwiches - an intimate
-							setting with 12 indoor seats plus patio seating.
+							{{ product.description }}
 						</div>
 					</v-card-text>
 
 					<v-divider class="mx-4"></v-divider>
 
-					<v-card-title>Tonight's availability</v-card-title>
-
-					<v-card-text>
-						<v-chip-group
-							v-model="selection"
-							active-class="deep-purple accent-4 white--text"
-							column
-						>
-							<v-chip>5:30PM</v-chip>
-
-							<v-chip>7:30PM</v-chip>
-
-							<v-chip>8:00PM</v-chip>
-
-							<v-chip>9:00PM</v-chip>
-						</v-chip-group>
-					</v-card-text>
-
 					<v-card-actions>
-						<v-btn
-							color="deep-purple lighten-2"
-							text
-							@click="reserve"
-						>
-							Reserve
+						<v-btn color="primary" text @click="addToCart">
+							Add to cart
 						</v-btn>
 					</v-card-actions>
 				</v-card>
@@ -85,17 +65,36 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import IProduct from "@/models/request/product";
+import ProductService from "@/services/product-service";
+import { Component, Vue, Inject } from "vue-property-decorator";
+import Loading from "@/components/Loading.vue";
 
-@Component
+@Component({ components: { Loading } })
 export default class Home extends Vue {
-	selection = 1;
-	loading = false;
+	@Inject() readonly productService!: ProductService;
 
-	reserve(): void {
+	products: IProduct[] = [];
+
+	selection = 1;
+	dataLoaded = false;
+
+	async created(): Promise<void> {
+		await this.initialize();
+	}
+
+	async initialize(): Promise<void> {
+		this.dataLoaded = false;
+		this.products = await this.productService.getProducts();
+		this.dataLoaded = true;
+	}
+
+	addToCart(): void {
 		//
 	}
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+@import "@/scss/global.scss";
+</style>

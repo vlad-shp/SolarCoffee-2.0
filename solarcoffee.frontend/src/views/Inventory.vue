@@ -173,3 +173,7 @@ export default class Inventory extends Vue {
 	}
 }
 </script>
+
+<style scoped lang="scss">
+@import "@/scss/global.scss";
+</style>

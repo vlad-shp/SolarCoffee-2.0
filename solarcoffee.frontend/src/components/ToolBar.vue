@@ -1,10 +1,6 @@
 <template>
 	<div>
-		<v-toolbar
-			dark
-			prominent
-			src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg"
-		>
+		<v-toolbar dark prominent src="../assets/vbanner.jpg">
 			<v-toolbar-title>Solar Coffee 2.0</v-toolbar-title>
 
 			<v-spacer></v-spacer>

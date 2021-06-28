@@ -167,3 +167,7 @@ export default class Products extends Vue {
 	}
 }
 </script>
+
+<style scoped lang="scss">
+@import "@/scss/global.scss";
+</style>
